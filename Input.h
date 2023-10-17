@@ -15,8 +15,18 @@ public:
 
 	void Update();
 
+	bool PushKey(BYTE keyNumber);
+
+	bool Trigger(BYTE keyNumber);
+
 private:
 	Microsoft::WRL::ComPtr<IDirectInputDevice8> keyboard;
+	// DirectInput‚Ì‰Šú‰»
+	Microsoft::WRL::ComPtr<IDirectInput8> directInput;
+
+	BYTE key[256] = {};
+
+	BYTE keyPre[256] = {};
 
 };
 
