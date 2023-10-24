@@ -439,7 +439,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
     input_ = new Input();
-    input_->Initialize(winApp_->GetHInstance(), winApp_->GetHwnd());
+    input_->Initialize(winApp_);
 
 #pragma region 描画初期化処理
 
@@ -914,14 +914,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     // ゲームループ
     while (true) {
-        // メッセージがある？
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-            TranslateMessage(&msg); // キー入力メッセージの処理
-            DispatchMessage(&msg); // プロシージャにメッセージを送る
-        }
 
-        // ✖ボタンで終了メッセージが来たらゲームループを抜ける
-        if (msg.message == WM_QUIT) {
+        if (winApp_->Update() == true) {
             break;
         }
 
@@ -1077,11 +1071,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     }
 
+    winApp_->Finalize();
+
     delete input_;
     delete winApp_;
 
-    // ウィンドウクラスを登録解除
-    UnregisterClass(w.lpszClassName, w.hInstance);
 
     return 0;
 }
