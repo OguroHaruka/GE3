@@ -4,6 +4,7 @@
 #include <dxgi1_6.h>
 #include <d3d12.h>
 #include <vector>
+#include <chrono>
 #include "WinApp.h"
 
 class DirectXCommon
@@ -19,6 +20,8 @@ public:
 	ID3D12GraphicsCommandList* GetCommandList()const { return commandList.Get(); }
 
 private:
+	void InitializeFixFPS();
+	void UpdateFixFPS();
 	void DeviceInitialize();
 	void CommandInitialize();
 	void SwapChainInitialize();
@@ -51,5 +54,7 @@ private:
 	UINT64 fenceVal = 0;
 
 	D3D12_RESOURCE_BARRIER barrierDesc{};
+
+	std::chrono::steady_clock::time_point reference_;
 };
 
