@@ -7,6 +7,7 @@
 #include <d3d12.h>
 
 #include"DirectXCommon.h"
+#include "DirectXTex.h"
 
 
 class SpriteCommon
@@ -18,6 +19,11 @@ public:
 
 	ID3D12RootSignature* GetRootSignature() { return rootSignature.Get(); }
 	ID3D12PipelineState* GetPipelineState() { return pipelineState.Get(); }
+
+	DirectX::ScratchImage LoadTexture(const std::wstring& filePath);
+
+	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+
 private:
 	static IDxcBlob* CompileShader(
 		const std::wstring& filePath,

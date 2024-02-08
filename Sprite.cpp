@@ -1,5 +1,6 @@
 #include "Sprite.h"
-#include"BufferResource.h"
+#include "BufferResource.h"
+#include "External/imgui/imgui.h"
 
 #include <DirectXMath.h>
 using namespace Microsoft::WRL;
