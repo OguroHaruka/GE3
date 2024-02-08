@@ -2,7 +2,8 @@
 #include "Input.h"
 #include "WinApp.h"
 #include "DirectXCommon.h"
-
+#include "SpriteCommon.h"
+#include"Sprite.h"
 
 // ウィンドウプロシージャ
 LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -44,6 +45,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     input_ = new Input();
     input_->Initialize(winApp_);
 
+    SpriteCommon* spriteCommon = new SpriteCommon;
+    spriteCommon->Initialize(dxCommon_);
+
+    Sprite* sprite = new Sprite();
+    sprite->Initialize(dxCommon_,spriteCommon);
+
 #pragma region 描画初期化処理
 
     
@@ -63,12 +70,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         //更新前処理
         dxCommon_->PreDraw();
 
+        sprite->Draw();
+
         //更新後処理
         dxCommon_->PostDraw();
 
         // DirectX毎フレーム処理　ここまで
 
     }
+
+    delete sprite;
+    delete spriteCommon;
 
     winApp_->Finalize();
 
