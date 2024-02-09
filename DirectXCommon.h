@@ -36,7 +36,9 @@ private:
 	void FenceInitialize();
 
 	ID3D12DescriptorHeap* CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
-
+	
+public:
+	static const uint32_t kMaxSRVCount;
 private:
 	WinApp* winApp = nullptr;
 

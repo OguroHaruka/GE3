@@ -7,6 +7,8 @@
 #include "ImGuiManager.h"
 #include <vector>
 
+#include"TextureManager.h"
+
 // ウィンドウプロシージャ
 LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
     // メッセージ応じてゲーム固有の処理を行う
@@ -53,10 +55,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     SpriteCommon* spriteCommon = new SpriteCommon;
     spriteCommon->Initialize(dxCommon_);
 
+    TextureManager::GetInstance()->Initialize(dxCommon_);
+    TextureManager::GetInstance()->LoadTexture(L"resources/mario.jpg");
+    TextureManager::GetInstance()->LoadTexture(L"resources/reimu.png");
+
     std::vector<Sprite*>sprite;
     for (int i = 0; i < 5; i++) {
         Sprite* temp = new Sprite();
-        temp->Initialize(spriteCommon);
+        if(i%2==0)
+        temp->Initialize(spriteCommon, L"resources/mario.jpg");
+        else if(i%2==1)
+            temp->Initialize(spriteCommon, L"resources/reimu.png");
         temp->SetPosition({ (float)i * 120,0 });
         sprite.push_back(temp);
     }
@@ -118,6 +127,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     for (int i = 0; i < 5; i++) {
         delete sprite[i];
     }
+    TextureManager::GetInstance()->Finalize();
     delete spriteCommon;
 
     delete imgui;

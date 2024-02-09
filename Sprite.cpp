@@ -3,34 +3,18 @@
 #include "External/imgui/imgui.h"
 
 #include <DirectXMath.h>
+
+#include"TextureManager.h"
+
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
-void Sprite::Initialize( SpriteCommon* common)
+void Sprite::Initialize( SpriteCommon* common, std::wstring textureFilePath)
 {
 	common_ = common;
 	dxCommon_ = common_->GetDirectXCommon();
 
-	//‰æ‘œ‚Ì“Ç‚Ýž‚Ý
-	DirectX::ScratchImage mipImages = common->LoadTexture(L"Resources/mario.jpg");
-	const DirectX::TexMetadata& metaData = mipImages.GetMetadata();
-	ID3D12Resource* textureResource = CreateTextureResource(dxCommon_->GetDevice(), metaData);
-	common_->UploadTextureData(textureResource, mipImages);
-
-	//SHaderResourceViewì¬
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metaData.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = UINT(metaData.mipLevels);
-
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = dxCommon_->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
-	textureSrvHandleGPU = dxCommon_->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
-	
-	textureSrvHandleCPU.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU.ptr += dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	dxCommon_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
+	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexFilePath(textureFilePath);
 
 	CreateVertex();
 
@@ -112,7 +96,7 @@ void Sprite::Draw()
 	//s—ñ
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	//‰æ‘œ
-	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
 
 	//dxCommon_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 	dxCommon_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0,0);
