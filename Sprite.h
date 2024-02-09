@@ -31,6 +31,8 @@ private:
 public:
 	void Initialize(SpriteCommon*common);
 
+	void Update();
+
 	void Draw();
 
 private:
@@ -53,6 +55,7 @@ private:
 	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 
 	ComPtr<ID3D12Resource> materialResource;
+	MaterialData* materialData = nullptr;
 
 	ComPtr<ID3D12Resource> wvpResource;
 	DirectX::XMMATRIX* wvpData = nullptr;
@@ -60,6 +63,8 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
 	DirectX::XMFLOAT4 color_ = { 1.0f,1.0f,1.0f,1.0f };
+	Transform uvTransform = { {1.0f,1.0f,1.0f},{0,0,0},{0,0,0} };
+
 	Transform transform_ = { {1,1,1},{0,0,0},{0,0,0} };
 
 	Transform cameraTransform = { {1,1,1},{0,0,0},{0,0,-5} };

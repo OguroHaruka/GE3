@@ -72,6 +72,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         imgui->ShowDemo();
 
         input_->Update();
+        sprite->Update();
 
         //更新前処理
         ImGuiManager::CreateCommand();

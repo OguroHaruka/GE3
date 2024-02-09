@@ -41,6 +41,18 @@ void Sprite::Initialize( SpriteCommon* common)
 	CreateWVP();
 }
 
+void Sprite::Update()
+{
+	ImGui::Begin("Texture");
+	ImGui::DragFloat3("Pos", &transform_.translate.x, 0.1f);
+
+	ImGui::DragFloat3("UV-Pos", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::SliderAngle("UV-Rot", &uvTransform.rotate.z);
+	ImGui::DragFloat3("UV-Scale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
+
+	ImGui::End();
+}
+
 void Sprite::Draw()
 {
 
@@ -67,7 +79,14 @@ void Sprite::Draw()
 
 	*wvpData = worldViewProjectionMatrix;
 
-	
+	XMMATRIX uvScaleMatrix = XMMatrixScalingFromVector(XMLoadFloat3(&uvTransform.scale));
+	XMMATRIX uvRotateMatrix = XMMatrixRotationRollPitchYawFromVector(XMLoadFloat3(&uvTransform.rotate));
+	XMMATRIX uvTanslationMatrix = XMMatrixTranslationFromVector(XMLoadFloat3(&uvTransform.translate));
+
+	XMMATRIX uvRotationAndScaleMatrix = XMMatrixMultiply(uvRotateMatrix, uvScaleMatrix);
+	XMMATRIX uvWorldMatrix = XMMatrixMultiply(uvRotationAndScaleMatrix, uvTanslationMatrix);
+	materialData->uvTransform = uvWorldMatrix;
+
 	//’¸“_î•ñ
 	dxCommon_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexbufferView);
 
@@ -132,7 +151,7 @@ void Sprite::CreateMaterial()
 {
 	materialResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(MaterialData));
 
-	MaterialData* materialData = nullptr;
+	
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	materialData->color =color_;
 	materialData->uvTransform = XMMatrixIdentity();
