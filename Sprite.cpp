@@ -23,6 +23,8 @@ void Sprite::Initialize( SpriteCommon* common, std::wstring textureFilePath)
 	CreateMaterial();
 
 	CreateWVP();
+
+	AdjustTextureSize();
 }
 
 void Sprite::Update()
@@ -32,15 +34,37 @@ void Sprite::Update()
 	materialData->color = color_;
 	transform_.scale = { size.x,size.y,0 };
 
-	vertexData[0].position = { 0.0f,1.0f,0.0f,1.0f };
-	vertexData[0].texcoord = { 0.0f,1.0f };
-	vertexData[1].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexData[1].texcoord = { 0.0f,0.0f };
-	vertexData[2].position = { 1.0f,1.0f,0.0f,1.0f };
-	vertexData[2].texcoord = { 1.0f,1.0f };
+	float left = 0.0f-anchorPoint.x;
+	float right = 1.0f - anchorPoint.x;
+	float top = 0.0f - anchorPoint.y;
+	float bottom = 1.0f - anchorPoint.y;
 
-	vertexData[3].position = { 1.0f,0.0f,0.0f,1.0f };
-	vertexData[3].texcoord = { 1.0f,0.0f };
+	if (isFlipX == true) {
+		//¶‰E”½“]
+		left=-left;
+		right = -right;
+	}
+	if (isFlipY == true) {
+		//ã‰º”½“]
+		top = -top;
+		bottom = -bottom;
+	}
+
+	const DirectX::TexMetadata& metaData = TextureManager::GetInstance()->GetMetaData(textureIndex_);
+	float tex_left=textureLeftTop.x/metaData.width;
+	float tex_right=(textureLeftTop.x+textureSize.x)/metaData.width;
+	float tex_top=textureLeftTop.y/metaData.height;
+	float tex_bottom=(textureLeftTop.y+textureSize.y)/metaData.height;
+
+	vertexData[0].position = { left,bottom,0.0f,1.0f };
+	vertexData[0].texcoord = { tex_left,tex_bottom };
+	vertexData[1].position = { left,top,0.0f,1.0f };
+	vertexData[1].texcoord = { tex_left,tex_top };
+	vertexData[2].position = { right,bottom,0.0f,1.0f };
+	vertexData[2].texcoord = { tex_right,tex_bottom };
+
+	vertexData[3].position = { right,top,0.0f,1.0f };
+	vertexData[3].texcoord = { tex_right,tex_top };
 
 	ImGui::Begin("Texture");
 	ImGui::DragFloat3("Pos", &transform_.translate.x, 0.1f);
@@ -168,4 +192,14 @@ void Sprite::CreateWVP()
 	
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	*wvpData = XMMatrixIdentity();
+}
+
+void Sprite::AdjustTextureSize()
+{
+	const DirectX::TexMetadata& metaData = TextureManager::GetInstance()->GetMetaData(textureIndex_);
+
+	textureSize.x = static_cast<float>(metaData.width);
+	textureSize.y = static_cast<float>(metaData.height);
+
+	size = textureSize;
 }
