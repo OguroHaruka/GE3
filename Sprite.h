@@ -21,8 +21,13 @@ private:
 	struct  VertexData {
 		DirectX::XMFLOAT4 position;
 		DirectX::XMFLOAT2 texcoord;
-
 	};
+
+	struct MaterialData {
+		DirectX::XMFLOAT4 color;
+		DirectX::XMMATRIX uvTransform;
+	};
+
 public:
 	void Initialize(SpriteCommon*common);
 
@@ -30,6 +35,8 @@ public:
 
 private:
 	void CreateVertex();
+
+	void CreateIndex();
 
 	void CreateMaterial();
 
@@ -41,6 +48,9 @@ private:
 
 	ComPtr<ID3D12Resource> vertexResource;
 	D3D12_VERTEX_BUFFER_VIEW vertexbufferView{};
+
+	ComPtr<ID3D12Resource> indexResource;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 
 	ComPtr<ID3D12Resource> materialResource;
 

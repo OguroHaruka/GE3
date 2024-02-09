@@ -34,6 +34,8 @@ void Sprite::Initialize( SpriteCommon* common)
 
 	CreateVertex();
 
+	CreateIndex();
+
 	CreateMaterial();
 
 	CreateWVP();
@@ -69,6 +71,7 @@ void Sprite::Draw()
 	//’¸“_î•ñ
 	dxCommon_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexbufferView);
 
+	dxCommon_->GetCommandList()->IASetIndexBuffer(&indexBufferView);
 	
 	//Fî•ñ
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
@@ -77,16 +80,17 @@ void Sprite::Draw()
 	//‰æ‘œ
 	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 
-	dxCommon_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
+	//dxCommon_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
+	dxCommon_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0,0);
 
 }
 
 void Sprite::CreateVertex()
 {
-	vertexResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * 6);
+	vertexResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * 4);
 
 	vertexbufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
-	vertexbufferView.SizeInBytes = sizeof(VertexData) * 6;
+	vertexbufferView.SizeInBytes = sizeof(VertexData) * 4;
 	vertexbufferView.StrideInBytes = sizeof(VertexData);
 
 	VertexData* vertexData = nullptr;
@@ -99,23 +103,40 @@ void Sprite::CreateVertex()
 	vertexData[2].position = { +0.5f,-0.5f,0.0f,1.0f };
 	vertexData[2].texcoord = { 1.0f,1.0f };
 
-	vertexData[3].position = { -0.5f,+0.5f,0.0f,1.0f };
-	vertexData[3].texcoord = { 0.0f,0.0f };
-	vertexData[4].position = { +0.5f,+0.5f,0.0f,1.0f };
-	vertexData[4].texcoord = { 1.0f,0.0f };
-	vertexData[5].position = { +0.5f,-0.5f,0.0f,1.0f };
-	vertexData[5].texcoord = { 1.0f,1.0f };
+	vertexData[3].position = { +0.5f,+0.5f,0.0f,1.0f };
+	vertexData[3].texcoord = { 1.0f,0.0f };
+
+
+}
+
+void Sprite::CreateIndex()
+{
+	indexResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(uint32_t)*6);
+
+	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
+	indexBufferView.SizeInBytes = sizeof(uint32_t) * 6;
+	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+
+	uint32_t* indexData = nullptr;
+	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+
+	indexData[0] = 0; indexData[1] = 1;
+	indexData[2] = 2;
+	indexData[3] = 1; indexData[4] = 3;
+	indexData[5] = 2;
 
 
 }
 
 void Sprite::CreateMaterial()
 {
-	materialResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(XMFLOAT4));
+	materialResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(MaterialData));
 
-	XMFLOAT4* materialData = nullptr;
+	MaterialData* materialData = nullptr;
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	*materialData =color_;
+	materialData->color =color_;
+	materialData->uvTransform = XMMatrixIdentity();
+	
 }
 
 void Sprite::CreateWVP()
