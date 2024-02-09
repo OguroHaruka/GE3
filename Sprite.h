@@ -17,8 +17,14 @@ private:
 		DirectX::XMFLOAT3 rotate;
 		DirectX::XMFLOAT3 translate;
 	};
+
+	struct  VertexData {
+		DirectX::XMFLOAT4 position;
+		DirectX::XMFLOAT2 texcoord;
+
+	};
 public:
-	void Initialize(DirectXCommon* dxCommon,SpriteCommon*common);
+	void Initialize(SpriteCommon*common);
 
 	void Draw();
 
@@ -41,7 +47,9 @@ private:
 	ComPtr<ID3D12Resource> wvpResource;
 	DirectX::XMMATRIX* wvpData = nullptr;
 
-	DirectX::XMFLOAT4 color_ = { 1.0f,0.0f,0.0f,1.0f };
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
+	DirectX::XMFLOAT4 color_ = { 1.0f,1.0f,1.0f,1.0f };
 	Transform transform_ = { {1,1,1},{0,0,0},{0,0,0} };
 
 	Transform cameraTransform = { {1,1,1},{0,0,0},{0,0,-5} };

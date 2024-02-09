@@ -53,7 +53,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     spriteCommon->Initialize(dxCommon_);
 
     Sprite* sprite = new Sprite();
-    sprite->Initialize(dxCommon_,spriteCommon);
+    sprite->Initialize(spriteCommon);
 
 #pragma region 描画初期化処理
 
@@ -76,6 +76,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         //更新前処理
         ImGuiManager::CreateCommand();
         dxCommon_->PreDraw();
+        spriteCommon->SpritePreDraw();
 
         sprite->Draw();
 

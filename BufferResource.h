@@ -31,7 +31,8 @@ ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMe
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = UINT(metaData.width);
 	resourceDesc.Height = UINT(metaData.height);
-	resourceDesc.MipLevels = UINT16(metaData.arraySize);
+	resourceDesc.MipLevels = UINT16(metaData.mipLevels);
+	resourceDesc.DepthOrArraySize = UINT16(metaData.arraySize);
 	resourceDesc.Format = metaData.format;
 	resourceDesc.SampleDesc.Count = 1;
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metaData.dimension);
