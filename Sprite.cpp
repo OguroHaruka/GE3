@@ -43,6 +43,21 @@ void Sprite::Initialize( SpriteCommon* common)
 
 void Sprite::Update()
 {
+	transform_.translate = { position.x,position.y,0 };
+	transform_.rotate = { 0,0,rotation };
+	materialData->color = color_;
+	transform_.scale = { size.x,size.y,0 };
+
+	vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };
+	vertexData[0].texcoord = { 0.0f,1.0f };
+	vertexData[1].position = { -0.5f,+0.5f,0.0f,1.0f };
+	vertexData[1].texcoord = { 0.0f,0.0f };
+	vertexData[2].position = { +0.5f,-0.5f,0.0f,1.0f };
+	vertexData[2].texcoord = { 1.0f,1.0f };
+
+	vertexData[3].position = { +0.5f,+0.5f,0.0f,1.0f };
+	vertexData[3].texcoord = { 1.0f,0.0f };
+
 	ImGui::Begin("Texture");
 	ImGui::DragFloat3("Pos", &transform_.translate.x, 0.1f);
 
@@ -88,7 +103,7 @@ void Sprite::Draw()
 	materialData->uvTransform = uvWorldMatrix;
 
 	//’¸“_î•ñ
-	dxCommon_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexbufferView);
+	dxCommon_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 
 	dxCommon_->GetCommandList()->IASetIndexBuffer(&indexBufferView);
 	
@@ -108,11 +123,11 @@ void Sprite::CreateVertex()
 {
 	vertexResource = CreateBufferResource(dxCommon_->GetDevice(), sizeof(VertexData) * 4);
 
-	vertexbufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
-	vertexbufferView.SizeInBytes = sizeof(VertexData) * 4;
-	vertexbufferView.StrideInBytes = sizeof(VertexData);
+	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * 4;
+	vertexBufferView.StrideInBytes = sizeof(VertexData);
 
-	VertexData* vertexData = nullptr;
+	
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 
 	vertexData[0].position = { -0.5f,-0.5f,0.0f,1.0f };

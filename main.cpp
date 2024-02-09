@@ -5,6 +5,7 @@
 #include "SpriteCommon.h"
 #include "Sprite.h"
 #include "ImGuiManager.h"
+#include <vector>
 
 // ウィンドウプロシージャ
 LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -52,9 +53,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     SpriteCommon* spriteCommon = new SpriteCommon;
     spriteCommon->Initialize(dxCommon_);
 
-    Sprite* sprite = new Sprite();
-    sprite->Initialize(spriteCommon);
-
+    std::vector<Sprite*>sprite;
+    for (int i = 0; i < 5; i++) {
+        Sprite* temp = new Sprite();
+        temp->Initialize(spriteCommon);
+        temp->SetPosition({ (float)i * 1,0 });
+        sprite.push_back(temp);
+    }
 #pragma region 描画初期化処理
 
     
@@ -72,15 +77,37 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         imgui->ShowDemo();
 
         input_->Update();
-        sprite->Update();
 
+        //DirectX::XMFLOAT2 pos = sprite->GetPosition();
+        //pos.x += 0.01f;
+        //sprite->SetPosition(pos);
+
+        //float rot = sprite->GetRotation();
+        //rot += 0.001f;
+        //sprite->SetRotation(rot);
+
+        //DirectX::XMFLOAT4 color = sprite->GetColor();
+        //color.x -= 0.01f;
+        //if (color.x < 0) {
+        //    color.x = 1.0f;
+        //}
+        //sprite->SetColor(color);
+
+        //DirectX::XMFLOAT2 size = sprite->GetSize();
+        //size.y += 0.01f;
+        //sprite->SetSize(size);
+
+        for (int i = 0; i < 5; i++) {
+            sprite[i]->Update();
+        }
         //更新前処理
         ImGuiManager::CreateCommand();
         dxCommon_->PreDraw();
         spriteCommon->SpritePreDraw();
 
-        sprite->Draw();
-
+        for (int i = 0; i < 5; i++) {
+            sprite[i]->Draw();
+        }
         //更新後処理
         ImGuiManager::CommandsExcute(dxCommon_->GetCommandList());
         dxCommon_->PostDraw();
@@ -88,8 +115,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         // DirectX毎フレーム処理　ここまで
 
     }
-
-    delete sprite;
+    for (int i = 0; i < 5; i++) {
+        delete sprite[i];
+    }
     delete spriteCommon;
 
     delete imgui;
